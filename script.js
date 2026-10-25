@@ -10,10 +10,9 @@ function path(car,file){return `assets/${car.folder}/${file}`}
 function descriptionParts(car){
  const lines=(Array.isArray(car.description)?car.description:[car.description||'']).map(line=>String(line||'').trim());
  const firstBlank=lines.findIndex(line=>!line);
- const narrativeStart=firstBlank>=0?firstBlank+1:Math.min(5,lines.length);
- const narrative=lines.slice(narrativeStart).filter(Boolean);
- const teaser=narrative[0] || lines.find(Boolean) || '';
- return {teaser, full:lines.join('\n').trim()};
+ const topLines=(firstBlank>=0?lines.slice(0,firstBlank):lines).filter(Boolean);
+ const narrative=(firstBlank>=0?lines.slice(firstBlank+1):[]).filter(Boolean);
+ return {topLines, full:narrative.join('\n\n').trim()};
 }
 function loadImage(src){return new Promise(resolve=>{const img=new Image();img.onload=()=>resolve(true);img.onerror=()=>resolve(false);img.src=src})}
 async function discoverSequence(car,extension,start=1,max=250){
@@ -38,7 +37,14 @@ async function mediaExists(src){return new Promise(resolve=>{const v=document.cr
 async function openGallery(car){
  document.getElementById('galleryTitle').textContent=car.name;
  const description=descriptionParts(car);
- document.getElementById('galleryTeaser').textContent=description.teaser;
+ const specs=document.getElementById('gallerySpecs');
+ specs.innerHTML='';
+ description.topLines.forEach((line,index)=>{
+  const item=document.createElement('div');
+  item.className=index===0?'gallery-spec-model':'gallery-spec-item';
+  item.textContent=line;
+  specs.appendChild(item);
+ });
  document.getElementById('galleryDescription').textContent=description.full;
  galleryGrid.innerHTML='<p class="gallery-loading">Loading photographs…</p>';
  activeItems=[];

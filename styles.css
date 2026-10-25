@@ -188,17 +188,28 @@ footer
   padding:4px 0 12px;
   max-width:760px
 }
-/* A compact hook keeps the first photographs visible before the full description. */
-.gallery-teaser
+/* Keep the compact vehicle/specification card above the gallery. */
+.gallery-specs
 {
-  margin:9px 0 0;
-  max-width:760px;
-  color:var(--muted);
-  font-size:14px;
-  line-height:1.5;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px 18px;
+  margin:12px 0 0;
+  max-width:900px;
+  font-size:13px;
+  line-height:1.45;
+  color:var(--muted)
+}
+.gallery-spec-model
+{
+  flex-basis:100%;
+  color:var(--ink);
+  font-size:15px;
+  font-weight:600
+}
+.gallery-spec-item
+{
+  font-weight:500
 }
 .gallery-description
 {
