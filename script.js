@@ -39,7 +39,7 @@ async function openGallery(car){
  const description=descriptionParts(car);
  const specs=document.getElementById('gallerySpecs');
  specs.innerHTML='';
- description.topLines.forEach((line,index)=>{
+ description.topLines.slice(1).forEach((line,index)=>{
   const item=document.createElement('div');
   item.className=index===0?'gallery-spec-model':'gallery-spec-item';
   item.textContent=line;
