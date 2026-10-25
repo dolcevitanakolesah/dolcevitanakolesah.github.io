@@ -41,7 +41,7 @@ async function openGallery(car){
  specs.innerHTML='';
  description.topLines.slice(1).forEach((line,index)=>{
   const item=document.createElement('div');
-  item.className=index===0?'gallery-spec-model':'gallery-spec-item';
+  item.className='gallery-spec-item';
   item.textContent=line;
   specs.appendChild(item);
  });
