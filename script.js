@@ -30,16 +30,16 @@ function makeCard(car,index){
  const wrap=document.createElement('div');wrap.className='car-image-wrap';
  const img=document.createElement('img');img.className='car-image';img.src=path(car,car.prefix+'-Main.jpg');img.alt=car.name;img.loading=index<3?'eager':'lazy';
  img.onerror=()=>{card.remove()};wrap.appendChild(img);
- const title=document.createElement('p');title.className='car-title';title.textContent=car.name;
+ const title=document.createElement('p');title.className='car-title';title.textContent=car.title;
  card.append(wrap,title);card.addEventListener('click',()=>openGallery(car));card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openGallery(car)}});return card;
 }
 async function mediaExists(src){return new Promise(resolve=>{const v=document.createElement('video');v.preload='metadata';v.onloadedmetadata=()=>resolve(true);v.onerror=()=>resolve(false);v.src=src})}
 async function openGallery(car){
- document.getElementById('galleryTitle').textContent=car.name;
+ document.getElementById('galleryTitle').textContent=car.title;
  const description=descriptionParts(car);
  const specs=document.getElementById('gallerySpecs');
  specs.innerHTML='';
- description.topLines.slice(1).forEach((line,index)=>{
+ description.topLines.forEach((line,index)=>{
   const item=document.createElement('div');
   item.className='gallery-spec-item';
   item.textContent=line;
