@@ -28,7 +28,7 @@ async function discoverSequence(car,extension,start=1,max=250){
 function makeCard(car,index){
  const card=document.createElement('article');card.className='car-card';card.tabIndex=0;card.setAttribute('role','button');
  const wrap=document.createElement('div');wrap.className='car-image-wrap';
- const img=document.createElement('img');img.className='car-image';img.src=path(car,car.prefix+'-Main.jpg');img.alt=car.name;img.loading=index<3?'eager':'lazy';
+ const img=document.createElement('img');img.className='car-image';img.src=path(car,car.prefix+'-Main.jpg');img.alt=car.imageAlt;img.loading=index<3?'eager':'lazy';
  img.onerror=()=>{card.remove()};wrap.appendChild(img);
  const title=document.createElement('p');title.className='car-title';title.textContent=car.title;
  card.append(wrap,title);card.addEventListener('click',()=>openGallery(car));card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openGallery(car)}});return card;
