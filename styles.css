@@ -235,6 +235,11 @@ footer
   font-size:clamp(25px,3vw,38px);
   margin:0
 }
+.gallery-title-intro,
+.gallery-title-name
+{
+  display:block
+}
 .gallery-grid
 {
   display:grid;

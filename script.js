@@ -42,7 +42,15 @@ function makeCard(car,index){
 }
 async function mediaExists(src){return new Promise(resolve=>{const v=document.createElement('video');v.preload='metadata';v.onloadedmetadata=()=>resolve(true);v.onerror=()=>resolve(false);v.src=src})}
 async function openGallery(car){
- document.getElementById('galleryTitle').textContent=car.title;
+ const galleryTitle=document.getElementById('galleryTitle');
+ const fullTitle=String(car.title||'');
+ const separator=fullTitle.indexOf(':');
+ galleryTitle.replaceChildren();
+ if(separator>=0){
+  const intro=document.createElement('span');intro.className='gallery-title-intro';intro.textContent=fullTitle.slice(0,separator+1).trim();
+  const carName=document.createElement('span');carName.className='gallery-title-name';carName.textContent=fullTitle.slice(separator+1).trim();
+  galleryTitle.append(intro,carName);
+ }else{galleryTitle.textContent=fullTitle;}
  const description=descriptionParts(car);
  const specs=document.getElementById('gallerySpecs');
  specs.innerHTML='';
