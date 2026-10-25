@@ -2,7 +2,7 @@
   {
     "folder": "AlfaGTJunior",
     "prefix": "AlfaGTJunior",
-    "imageAlt": "1970 Alfa Romeo GT 1300 Junior <Scalino>",
+    "imageAlt": "Alfa Romeo GT Junior",
     "title": "На ступень выше: 1970 Alfa GT «Scalino»",
     "description": [
       "Пробег: 110,000 Km. ",
@@ -18,7 +18,7 @@
   {
     "folder": "Testarossa",
     "prefix": "Testarossa",
-    "imageAlt": "1991 Ferrari Testarossa <Cinque Bulloni>",
+    "imageAlt": "Ferrari Testarossa",
     "title": "Нельзя не заметить: 1991 Testarossa",
     "description": [
       "Пробег: 58,000 Km. ",
@@ -34,7 +34,7 @@
   {
     "folder": "Fiat500",
     "prefix": "Fiat500",
-    "imageAlt": "1970 Fiat 500L <Lusso>",
+    "imageAlt": "Fiat 500L",
     "title": "Может, оживим её? 1970 Fiat 500L",
     "description": [
       "Пробег: 32,000 Km. ",
@@ -50,7 +50,7 @@
   {
     "folder": "Carrera",
     "prefix": "Carrera",
-    "imageAlt": "1990 Porsche 911 / 964 <Tiptronic>",
+    "imageAlt": "Porsche 964",
     "title": "Никогда не выйдет из моды: 1990 Porsche 964",
     "description": [
       "Пробег: 96,000 Km. ",
@@ -66,7 +66,7 @@
   {
     "folder": "Bianchina",
     "prefix": "Bianchina",
-    "imageAlt": "1962 Autobianchi Bianchina Cabrio",
+    "imageAlt": "Bianchina Cabrio",
     "title": "Из Катании с любовью: 1962 Bianchina Cabrio",
     "description": [
       "Пробег: 64,000 Km. ",
@@ -82,7 +82,7 @@
   {
     "folder": "Fulvia",
     "prefix": "Fulvia",
-    "imageAlt": "1971 Lancia Fulvia HF <Lusso>",
+    "imageAlt": "Lancia Fulvia HF",
     "title": "Рождённый побеждать: 1971 Lancia Fulvia HF",
     "description": [
       "Пробег: 78,000 Km. ",
@@ -98,7 +98,7 @@
   {
     "folder": "Ghibli",
     "prefix": "Ghibli",
-    "imageAlt": "1975 Maserati Ghibli <Marino>",
+    "imageAlt": "Maserati Ghibli",
     "title": "1969 Maserati Ghibli",
     "description": [
       "Пробег: 75,000 Km. ",
@@ -114,7 +114,7 @@
   {
     "folder": "Spider",
     "prefix": "Spider",
-    "imageAlt": "1970 Alfa Romeo Spider <Duetto>",
+    "imageAlt": "Alfa Romeo Spider",
     "title": "1971 Alfa Romeo Spider",
     "description": [
       "Пробег: 55,000 Km. ",
@@ -130,7 +130,7 @@
   {
     "folder": "Lamborghini350GT",
     "prefix": "Lamborghini350GT",
-    "imageAlt": "1984 Lamborghini 350 GT <Monster>",
+    "imageAlt": "Lamborghini 350 GT",
     "title": "1965 Lamborghini 350 GT",
     "description": [
       "Пробег: 24,000 Km. ",
