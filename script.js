@@ -44,7 +44,20 @@ function makeCard(car,index){
  }else{title.textContent=fullTitle;}
  card.append(wrap,title);card.addEventListener('click',()=>openGallery(car));card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openGallery(car)}});return card;
 }
-async function mediaExists(src){return new Promise(resolve=>{const v=document.createElement('video');v.preload='metadata';v.onloadedmetadata=()=>resolve(true);v.onerror=()=>resolve(false);v.src=src})}
+// Check whether a video file exists without relying on browser media metadata/codecs.
+// Some valid MP4s never fire loadedmetadata in the current browser, but can still be served.
+async function videoFileExists(src){
+ try{
+  const head=await fetch(src,{method:'HEAD',cache:'no-store'});
+  if(head.ok)return true;
+  // Some static hosts do not support HEAD; try a tiny ranged GET in that case.
+  if(head.status!==405&&head.status!==501)return false;
+ }catch(_){/* Fall back to a ranged GET below. */}
+ try{
+  const response=await fetch(src,{headers:{Range:'bytes=0-0'},cache:'no-store'});
+  return response.ok||response.status===206;
+ }catch(_){return false;}
+}
 async function openGallery(car){
  const galleryTitle=document.getElementById('galleryTitle');
  const fullTitle=String(car.title||'');
@@ -97,11 +110,15 @@ async function openGallery(car){
   foundPhotos++;
  }
 
- // Keep lowercase video filenames and append videos after the photographs.
- for(let n=1;n<=30;n++){
-  const filename=`${car.prefix}-video-${String(n).padStart(2,'0')}.mp4`;
-  const src=path(car,filename);
-  if(!await mediaExists(src))break;
+ // Discover video files by URL availability, not by loadedmetadata. A metadata/codec
+ // error must not hide an existing file or prevent later numbered videos from appearing.
+ const videoChecks=await Promise.all(Array.from({length:30},async(_,index)=>{
+  const n=index+1;
+  const src=path(car,`${car.prefix}-video-${String(n).padStart(2,'0')}.mp4`);
+  return await videoFileExists(src)?{n,src}:null;
+ }));
+ for(const video of videoChecks.filter(Boolean).sort((a,b)=>a.n-b.n)){
+  const {src}=video;
   const item={type:'video',src,title:''};
   activeItems.push(item);
   const fig=document.createElement('figure');
