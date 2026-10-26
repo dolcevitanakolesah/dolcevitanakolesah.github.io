@@ -44,29 +44,18 @@ function makeCard(car,index){
  }else{title.textContent=fullTitle;}
  card.append(wrap,title);card.addEventListener('click',()=>openGallery(car));card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openGallery(car)}});return card;
 }
-// Check whether a video file exists without relying on browser media metadata/codecs.
-// Some valid MP4s never fire loadedmetadata in the current browser, but can still be served.
-async function videoFileExists(src){
- // Do not use video metadata as an existence test: browser/codec metadata errors
- // must not keep a real video out of the gallery. A definite 404 means missing;
- // other server responses are treated as present and the video element handles playback.
- try{
-  const head=await fetch(src,{method:'HEAD',cache:'no-store'});
-  if(head.status===404) return false;
-  if(head.ok) return true;
-  // Some static hosts reject HEAD. Try a small ranged GET, but don't mistake
-  // authorization/server quirks for a missing file.
-  try{
-   const response=await fetch(src,{headers:{Range:'bytes=0-0'},cache:'no-store'});
-   return response.status!==404;
-  }catch(_){
-   return head.status!==404;
-  }
- }catch(_){
-  // If fetch is unavailable in this hosting environment, let the browser's
-  // video element try the URL instead of silently hiding it.
-  return true;
- }
+// Verify a video by waiting for its metadata before displaying it in the gallery.
+// This intentionally filters out files the browser cannot inspect successfully.
+async function mediaExists(src){
+ return new Promise(resolve=>{
+  const v=document.createElement('video');
+  let settled=false;
+  const finish=ok=>{if(settled)return;settled=true;v.removeAttribute('src');v.load();resolve(ok)};
+  v.preload='metadata';
+  v.onloadedmetadata=()=>finish(true);
+  v.onerror=()=>finish(false);
+  v.src=src;
+ });
 }
 async function openGallery(car){
  const galleryTitle=document.getElementById('galleryTitle');
@@ -120,38 +109,35 @@ async function openGallery(car){
   foundPhotos++;
  }
 
- // Discover video files by URL availability, not by loadedmetadata. A metadata/codec
- // error must not hide an existing file or prevent later numbered videos from appearing.
- const videoChecks=await Promise.all(Array.from({length:30},async(_,index)=>{
-  const n=index+1;
-  const matches=[];
-  // Check both supported video formats independently for every number.
+ // Verify each MP4/WebM candidate before adding it to the gallery.
+ // Check both formats independently for each number, so mixed formats work.
+ for(let n=1;n<=30;n++){
+  let foundAtThisNumber=false;
   for(const ext of ['mp4','webm']){
    const src=path(car,`${car.prefix}-video-${String(n).padStart(2,'0')}.${ext}`);
-   if(await videoFileExists(src)) matches.push({n,ext,src});
+   if(!await mediaExists(src)) continue;
+   foundAtThisNumber=true;
+   const item={type:'video',src,title:''};
+   activeItems.push(item);
+   const fig=document.createElement('figure');
+   fig.className='gallery-item';
+   const v=document.createElement('video');
+   v.className='gallery-video';
+   v.src=src;
+   v.controls=true;
+   v.preload='metadata';
+   v.playsInline=true;
+   fig.appendChild(v);
+   const open=document.createElement('button');
+   open.className='video-open';
+   open.type='button';
+   open.textContent='Open video';
+   open.addEventListener('click',()=>showLightbox(activeItems.indexOf(item)));
+   fig.appendChild(open);
+   galleryGrid.appendChild(fig);
   }
-  return matches;
- }));
- for(const video of videoChecks.flat().sort((a,b)=>a.n-b.n||(['mp4','webm'].indexOf(a.ext)-['mp4','webm'].indexOf(b.ext)))){
-  const {src}=video;
-  const item={type:'video',src,title:''};
-  activeItems.push(item);
-  const fig=document.createElement('figure');
-  fig.className='gallery-item';
-  const v=document.createElement('video');
-  v.className='gallery-video';
-  v.src=src;
-  v.controls=true;
-  v.preload='metadata';
-  v.playsInline=true;
-  fig.appendChild(v);
-  const open=document.createElement('button');
-  open.className='video-open';
-  open.type='button';
-  open.textContent='Open video';
-  open.addEventListener('click',()=>showLightbox(activeItems.indexOf(item)));
-  fig.appendChild(open);
-  galleryGrid.appendChild(fig);
+  // Stop at the first number for which neither format passed metadata verification.
+  if(!foundAtThisNumber) break;
  }
 
  if(!activeItems.length){
