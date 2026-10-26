@@ -1,7 +1,7 @@
 /* Italian Finds V6
    Add/remove cars in cars.json. Asset folders use each car's prefix (for example assets/AlfaGTJunior/).
    Images: assets/NN/PREFIX-Main.jpg or .webp and PREFIX-01.jpg/.webp, PREFIX-02.jpg/.webp...
-   Optional videos: PREFIX-video-01.mp4, PREFIX-video-02.mp4...
+   Optional videos: PREFIX-video-01.mp4/.webm, PREFIX-video-02.mp4/.webm...
 */
 let cars = [];
 const grid=document.getElementById('carGrid'),dialog=document.getElementById('galleryDialog'),galleryGrid=document.getElementById('galleryGrid'),lightbox=document.getElementById('lightbox'),lightboxContent=document.getElementById('lightboxContent');
@@ -47,16 +47,26 @@ function makeCard(car,index){
 // Check whether a video file exists without relying on browser media metadata/codecs.
 // Some valid MP4s never fire loadedmetadata in the current browser, but can still be served.
 async function videoFileExists(src){
+ // Do not use video metadata as an existence test: browser/codec metadata errors
+ // must not keep a real video out of the gallery. A definite 404 means missing;
+ // other server responses are treated as present and the video element handles playback.
  try{
   const head=await fetch(src,{method:'HEAD',cache:'no-store'});
-  if(head.ok)return true;
-  // Some static hosts do not support HEAD; try a tiny ranged GET in that case.
-  if(head.status!==405&&head.status!==501)return false;
- }catch(_){/* Fall back to a ranged GET below. */}
- try{
-  const response=await fetch(src,{headers:{Range:'bytes=0-0'},cache:'no-store'});
-  return response.ok||response.status===206;
- }catch(_){return false;}
+  if(head.status===404) return false;
+  if(head.ok) return true;
+  // Some static hosts reject HEAD. Try a small ranged GET, but don't mistake
+  // authorization/server quirks for a missing file.
+  try{
+   const response=await fetch(src,{headers:{Range:'bytes=0-0'},cache:'no-store'});
+   return response.status!==404;
+  }catch(_){
+   return head.status!==404;
+  }
+ }catch(_){
+  // If fetch is unavailable in this hosting environment, let the browser's
+  // video element try the URL instead of silently hiding it.
+  return true;
+ }
 }
 async function openGallery(car){
  const galleryTitle=document.getElementById('galleryTitle');
@@ -114,10 +124,15 @@ async function openGallery(car){
  // error must not hide an existing file or prevent later numbered videos from appearing.
  const videoChecks=await Promise.all(Array.from({length:30},async(_,index)=>{
   const n=index+1;
-  const src=path(car,`${car.prefix}-video-${String(n).padStart(2,'0')}.mp4`);
-  return await videoFileExists(src)?{n,src}:null;
+  const matches=[];
+  // Check both supported video formats independently for every number.
+  for(const ext of ['mp4','webm']){
+   const src=path(car,`${car.prefix}-video-${String(n).padStart(2,'0')}.${ext}`);
+   if(await videoFileExists(src)) matches.push({n,ext,src});
+  }
+  return matches;
  }));
- for(const video of videoChecks.filter(Boolean).sort((a,b)=>a.n-b.n)){
+ for(const video of videoChecks.flat().sort((a,b)=>a.n-b.n||(['mp4','webm'].indexOf(a.ext)-['mp4','webm'].indexOf(b.ext)))){
   const {src}=video;
   const item={type:'video',src,title:''};
   activeItems.push(item);
@@ -140,7 +155,7 @@ async function openGallery(car){
  }
 
  if(!activeItems.length){
-  galleryGrid.innerHTML='<p>No numbered JPG or WebP photographs found. Check the folder, prefix, and filenames.</p>';
+  galleryGrid.innerHTML='<p>No numbered JPG/WebP photographs or supported videos found. Check the folder, prefix, and filenames.</p>';
  }
 }
 function showLightbox(i){activeIndex=i;renderLightbox();if(!lightbox.open)lightbox.showModal()}
