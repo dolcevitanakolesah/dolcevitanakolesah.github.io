@@ -479,3 +479,16 @@ dialog.lightbox .lightbox-content {
   }
 }
 
+
+/* Keep navigation controls above the image/content layer in Samsung Internet. */
+dialog.lightbox .lightbox-arrow {
+  position: absolute;
+  z-index: 5;
+  pointer-events: auto;
+}
+
+dialog.lightbox .lightbox-counter {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+}
